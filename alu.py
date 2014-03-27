@@ -86,7 +86,9 @@ class Alu(object):
                 self.__mem[args[0]] -= self.__mem[args[1]] \
                                     if self.__mem.has_key(args[1]) else int(args[1])
             else:
-                pass
+                self.__mem[args[0]] = \
+                                    (self.__mem[args[1]] if self.__mem.has_key(args[1]) else int(args[1])) - \
+                                    (self.__mem[args[2]] if self.__mem.has_key(args[2]) else int(args[2]))
 
         @decorador_operaciones
         def add(self, *args):
@@ -99,8 +101,9 @@ class Alu(object):
                 self.__mem[args[0]] += self.__mem[args[1]] \
                                     if self.__mem.has_key(args[1]) else int(args[1])
             else:
-                pass
-
+                self.__mem[args[0]] = \
+                                    (self.__mem[args[1]] if self.__mem.has_key(args[1]) else int(args[1])) + \
+                                    (self.__mem[args[2]] if self.__mem.has_key(args[2]) else int(args[2]))
         @decorador_operaciones
         def mpy(self, *args):
             # Método de multiplicación.
@@ -112,8 +115,9 @@ class Alu(object):
                 self.__mem[args[0]] *= self.__mem[args[1]] \
                                     if self.__mem.has_key(args[1]) else int(args[1])
             else:
-                pass
-
+                self.__mem[args[0]] = \
+                                    (self.__mem[args[1]] if self.__mem.has_key(args[1]) else int(args[1])) * \
+                                    (self.__mem[args[2]] if self.__mem.has_key(args[2]) else int(args[2]))
         @decorador_operaciones
         def div(self, *args):
             # Método de división.
@@ -125,8 +129,9 @@ class Alu(object):
                 self.__mem[args[0]] /= self.__mem[args[1]] \
                                     if self.__mem.has_key(args[1]) else int(args[1])
             else:
-                pass
-
+                self.__mem[args[0]] = \
+                                    (self.__mem[args[1]] if self.__mem.has_key(args[1]) else int(args[1])) / \
+                                    (self.__mem[args[2]] if self.__mem.has_key(args[2]) else int(args[2]))
         try:
             if len(args[0]) > 0 and  len(args[0]) < 4:
                 try:
@@ -183,5 +188,4 @@ if __name__ == '__main__':
     alu.get_instrucciones()
     alu.ejecutar()
 
-# TODO: terminar las métodos, verificar los métodos de get y set de registros,
-#       verificar si son realmente necesarios.
+# TODO: terminar los métodos cuando hay tres registros.
