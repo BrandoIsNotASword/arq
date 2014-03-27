@@ -6,8 +6,7 @@
 def decorador_operaciones(op):
     """ Función decoradora de métodos operacionales. """
     def inner(*args):
-        print "Se ha ejecutado la operación: " + op.__name__.upper()  + \
-              " con estos parámetros: %s." % ', '.join(args[1])
+        print op.__name__.upper() + " " + ', '.join(args[1])
         op(*args)
     return inner
 
@@ -19,10 +18,10 @@ class Alu(object):
     __ac = 0
     __count = 0
     __instrucciones = []
-    __mem = ()
+    __mem = {}
 
     def leer_instrucciones(self, ins):
-        """ Método que lee instrucciones a partir de un archivo de texto """
+        # Método que lee instrucciones a partir de un archivo de texto.
         ins = ins.split(" ")
         for i in range(len(ins)):
             ins[i] = ins[i].replace(",", "") # filtrando por comas
@@ -32,7 +31,7 @@ class Alu(object):
 
     def get_ac(self): return self.__ac
 
-    def get_ac(self): return self.__count
+    def get_count(self): return self.__count
 
     def get_instrucciones(self):
         """ Método de impresiónde instrucciones. """
@@ -40,7 +39,7 @@ class Alu(object):
             print ins, ', '.join(args)
 
     def __set_registro(self, reg, ac):
-        """ Método que ingresa un nuevo registro o actualiza uno existente. """
+        # Método que ingresa un nuevo registro o actualiza uno existente.
         self.__mem[reg] = ac
 
     def __get_registro(self, reg):
@@ -55,35 +54,78 @@ class Alu(object):
 
 
     def __operaciones(self, ins, *args):
-        """ Método que realiza las operaciones de las instrucciones. """
+        # Método que realiza las operaciones de las instrucciones.
 
         @decorador_operaciones
         def move(self, *args):
-            pass
+            # Método que almacena un valor en un registro.
+            args, len_args = args[0], len(args[0])
+            self.__mem[args[0]] = int(args[1])
 
         @decorador_operaciones
         def stor(self, *args):
-            pass
+            # Método que guarda un valor en ac.
+            args, len_args = args[0], len(args[0])
+            self.__ac = self.__mem[args[0]] if self.__mem.has_key(args[0]) \
+                                            else int(args[0])
 
         @decorador_operaciones
         def load(self, *args):
-            pass
+            # Método que carga lo que tiene ac en un registro.
+            args, len_args = args[0], len(args[0])
+            self.__mem[args[0]] = self.__ac
 
         @decorador_operaciones
         def sub(self, *args):
+            # Método de resta.
             args, len_args = args[0], len(args[0])
+            if len_args == 1:
+                self.__ac -= self.__mem[args[0]] if self.__mem.has_key(args[0]) \
+                                                 else int(args[0])
+            elif len_args == 2:
+                self.__mem[args[0]] -= self.__mem[args[1]] \
+                                    if self.__mem.has_key(args[1]) else int(args[1])
+            else:
+                pass
 
         @decorador_operaciones
         def add(self, *args):
-            pass
+            # Método de suma.
+            args, len_args = args[0], len(args[0])
+            if len_args == 1:
+                self.__ac += self.__mem[args[0]] if self.__mem.has_key(args[0]) \
+                                                 else int(args[0])
+            elif len_args == 2:
+                self.__mem[args[0]] += self.__mem[args[1]] \
+                                    if self.__mem.has_key(args[1]) else int(args[1])
+            else:
+                pass
 
         @decorador_operaciones
         def mpy(self, *args):
-            pass
+            # Método de multiplicación.
+            args, len_args = args[0], len(args[0])
+            if len_args == 1:
+                self.__ac *= self.__mem[args[0]] if self.__mem.has_key(args[0]) \
+                                                 else int(args[0])
+            elif len_args == 2:
+                self.__mem[args[0]] *= self.__mem[args[1]] \
+                                    if self.__mem.has_key(args[1]) else int(args[1])
+            else:
+                pass
 
         @decorador_operaciones
         def div(self, *args):
-            pass
+            # Método de división.
+            args, len_args = args[0], len(args[0])
+            if len_args == 1:
+                self.__ac /= self.__mem[args[0]] if self.__mem.has_key(args[0]) \
+                                                 else int(args[0])
+            elif len_args == 2:
+                self.__mem[args[0]] /= self.__mem[args[1]] \
+                                    if self.__mem.has_key(args[1]) else int(args[1])
+            else:
+                pass
 
         try:
             if len(args[0]) > 0 and  len(args[0]) < 4:
@@ -114,11 +156,13 @@ class Alu(object):
                     print "La instrucción ", e.args, "no existe."
             raise Exception(len(args[0]))
         except Exception, e:
-            print "Número de variables inválidas: " + e.args
+            print "Número de variables inválidas: ", e.args
 
     def ejecutar(self):
         for ins, args in self.__instrucciones:
             self.__operaciones(ins, args)
+            print "Ac: ", self.__ac
+            print self.__mem
 
 if __name__ == '__main__':
     alu = Alu()
@@ -139,4 +183,5 @@ if __name__ == '__main__':
     alu.get_instrucciones()
     alu.ejecutar()
 
-# TODO: terminar las métodos.
+# TODO: terminar las métodos, verificar los métodos de get y set de registros,
+#       verificar si son realmente necesarios.

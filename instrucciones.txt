@@ -1,4 +1,4 @@
-SUB $t1, 2, 3
-MPY $t2, 4, 6
-ADD $t2, $t2, 6
-DIV $t1, $t1, $t2
+STOR 5
+LOAD $t0
+MOVE $t1, 3
+ADD $t0, $t1
