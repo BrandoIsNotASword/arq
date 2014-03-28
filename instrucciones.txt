@@ -1,5 +1,6 @@
-STOR 5
-LOAD $t0
-MOVE $t1, 3
-ADD $t0, $t1
-ADD $t3, $t0, $t1
+LOAD $t3
+STOR 10
+SUB $t1, 8, 2
+MPY $t2, 4, 5
+ADD $t2, $t2, 6
+DIV $t1, $t1, $t2

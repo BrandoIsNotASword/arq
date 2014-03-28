@@ -4,15 +4,16 @@
 # Programa: parser de instrucciones.
 
 def decorador_operaciones(op):
-    """ Función decoradora de métodos operacionales. """
+    # Función decoradora de métodos operacionales.
     def inner(*args):
+        print "Instrucción:",
         print op.__name__.upper() + " " + ', '.join(args[1])
         op(*args)
     return inner
 
 class Alu(object):
     """ 
-        Clase que contiene un atributo de almacenamiento y métodos  que simulan
+        Clase que contiene un atributo de almacenamiento y métodos que simulan
         una ALU.
     """
     __ac = 0
@@ -22,39 +23,33 @@ class Alu(object):
 
     def leer_instrucciones(self, ins):
         # Método que lee instrucciones a partir de un archivo de texto.
-        ins = ins.split(" ")
-        for i in range(len(ins)):
-            ins[i] = ins[i].replace(",", "") # filtrando por comas
-            ins[i] = ins[i].replace("\n", "") # obteniendo la operación
-            com = ins[0].upper()
-        self.__instrucciones.append([com, ins[1:]])
+        error = False
+        while ins != '' and not error:
+            ins = ins.split(" ")
+            for i in range(len(ins)):
+                ins[i] = ins[i].replace(",", "") # filtrando por comas
+                ins[i] = ins[i].replace("\n", "") # obteniendo la operación
+                com = ins[0].upper()
+            self.__instrucciones.append([com, ins[1:]])
+            ins = f.readline()
+        f.close()
 
-    def get_ac(self): return self.__ac
-
-    def get_count(self): return self.__count
+    def get_registros(self):
+        """ Método de impresión de registros. """
+        reg_str = "\nRegistros:\n" + "AC: %s" % str(self.__ac)
+        for reg, val in self.__mem.iteritems():
+            reg_str += "\n" + reg + ": " + str(val)
+        return reg_str
 
     def get_instrucciones(self):
-        """ Método de impresiónde instrucciones. """
+        """ Método de impresión de instrucciones. """
+        ins_str = "Instrucciones:\n"
         for ins, args in self.__instrucciones:
-            print ins, ', '.join(args)
-
-    def __set_registro(self, reg, ac):
-        # Método que ingresa un nuevo registro o actualiza uno existente.
-        self.__mem[reg] = ac
-
-    def __get_registro(self, reg):
-        """ Método que obtiene algún registro ya existente. """
-        try:
-            registros = [i[0] for i in self.__mem.iteritems()]
-            if reg in registros: 
-                return self.__mem[reg]
-            raise Exception(reg)
-        except Exception, e:
-            print "El registros" + e.args + "no existe."
-
+            ins_str += ins + " " + ', '.join(args) + "\n"
+        return ins_str
 
     def __operaciones(self, ins, *args):
-        # Método que realiza las operaciones de las instrucciones.
+        """ Método que realiza las operaciones de las instrucciones. """
 
         @decorador_operaciones
         def move(self, *args):
@@ -130,8 +125,8 @@ class Alu(object):
                                     if self.__mem.has_key(args[1]) else int(args[1])
             else:
                 self.__mem[args[0]] = \
-                                    (self.__mem[args[1]] if self.__mem.has_key(args[1]) else int(args[1])) / \
-                                    (self.__mem[args[2]] if self.__mem.has_key(args[2]) else int(args[2]))
+                                    (self.__mem[args[2]] if self.__mem.has_key(args[2]) else int(args[2])) / \
+                                    (self.__mem[args[1]] if self.__mem.has_key(args[1]) else int(args[1]))
         try:
             if len(args[0]) > 0 and  len(args[0]) < 4:
                 try:
@@ -166,8 +161,9 @@ class Alu(object):
     def ejecutar(self):
         for ins, args in self.__instrucciones:
             self.__operaciones(ins, args)
-            print "Ac: ", self.__ac
-            print self.__mem
+            print self.get_registros() + "\n"
+            c = raw_input("Presiona ENTER para continuar...")
+            print "\n"
 
 if __name__ == '__main__':
     alu = Alu()
@@ -180,12 +176,9 @@ if __name__ == '__main__':
         except IOError:
             print 'El archivo no existe. Vuelve a intentarlo.'
 
-    while line != '':
-        alu.leer_instrucciones(line)
-        line = f.readline()
-    f.close()
-
-    alu.get_instrucciones()
+    alu.leer_instrucciones(line)
     alu.ejecutar()
 
-# TODO: terminar los métodos cuando hay tres registros.
+    print alu.get_instrucciones(), alu.get_registros()
+    
+# TODO: verificar registros ingresados y hacer interfaz.
